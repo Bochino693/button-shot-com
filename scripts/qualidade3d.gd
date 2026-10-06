@@ -11,7 +11,7 @@ extends Node
 ## O quadro 3D é sempre ampliado com filtro (nunca pixel "quadrado") e,
 ## sem MSAA, liga o FXAA (bordas lisas).
 
-const ARQUIVO := "user://qualidade3d_b12.cfg"
+const ARQUIVO := "user://qualidade3d_b18.cfg"
 const NIVEIS := [
 	# k = tamanho do quadro 3D em relação a 1280x720 (limitado pela tela)
 	# PC / placa forte: HDR, brilho real, sombras, MSAA
@@ -20,11 +20,12 @@ const NIVEIS := [
 	{"k": 1.25, "hdr": true, "msaa": Viewport.MSAA_2X, "fxaa": false, "sombra": true, "brilho": true, "chuva": 0.6},
 	# TV BOX (perfil leve, começa aqui no Android): sem HDR, sem sombra em
 	# tempo real, sem pós-brilho; a luz vem dos halos e fachos (baratos) e o
-	# FXAA alisa as bordas
-	{"k": 1.25, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.6},
-	{"k": 1.0, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.5},
-	{"k": 0.85, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.35},
-	{"k": 0.7, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.25},
+	# FXAA alisa as bordas. Começa na resolução da TV (1080p = nítido) e
+	# nunca desce de 720p: se nem assim segurar, o show roda a 30 quadros
+	# cravados (liso e nítido) em vez de borrado.
+	{"k": 1.5, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.6},
+	{"k": 1.25, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.5},
+	{"k": 1.0, "hdr": false, "msaa": Viewport.MSAA_DISABLED, "fxaa": true, "sombra": false, "brilho": false, "chuva": 0.35},
 ]
 const NIVEL_LEVE := 3        # deste degrau para baixo: perfil TV box
 const JANELA := 45           # quadros por medida durante o show
@@ -112,6 +113,8 @@ func confirmar() -> void:
 func _process(delta: float) -> void:
 	if not travado:
 		return
+	if VisualServer.get_render_info(VisualServer.INFO_SHADER_COMPILES_IN_FRAME) > 0:
+		return                  # quadro de compilação não diz nada da TV box
 	_deltas.append(delta)
 	if _deltas.size() < JANELA:
 		return

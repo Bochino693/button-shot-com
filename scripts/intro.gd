@@ -38,7 +38,7 @@ const VOO_CHUTE := 0.32
 const T_GOL := T_CHUTE + VOO_CHUTE
 const T_LOGO := T_GOL + 0.9
 const FIM := T_LOGO + 4.0
-const ALVO_GOL := Vector2(1162, 368)
+const ALVO_GOL := Vector2(1158, 374)
 
 var _t := 0.0
 var _saindo := false
@@ -95,7 +95,8 @@ func _montar_mesa() -> void:
 	_rede = Sprite.new()
 	_rede.texture = load("res://imagens/rede_dir.png")
 	_rede.centered = false
-	_rede.position = Vector2(Campo.CAMPO.end.x - 2, Campo.CENTRO.y - 140)
+	_rede.scale = Vector2(0.5, 0.5)         # o mesmo gol da partida
+	_rede.position = Vector2(Campo.CAMPO.end.x - 4, Campo.CENTRO.y - Campo.GOL_MEIA - 8)
 	_mesa.add_child(_rede)
 	# os tazos: sombra + tazo (textura pronta de cada seleção)
 	var sombra_tex: Texture = load("res://imagens/sombra.png")
@@ -348,8 +349,7 @@ func _atualizar(d: float) -> void:
 	var bal := 0.0
 	if u > 0.0:
 		bal = max(exp(-u * 3.0) * cos(u * 12.0), -0.2)
-	_rede.scale = Vector2(1.0 + 0.35 * bal, 1.0)
-	_rede.position.x = Campo.CAMPO.end.x - 2 + 6.0 * bal
+	_rede.scale.x = 0.5 * (1.0 + 0.35 * bal)   # as traves ficam no lugar
 	# câmera de TV: aproxima e acompanha a bola; no chute vai para o gol
 	var alvo_zoom := 1.28
 	var alvo_foco := b.linear_interpolate(Vector2(640, 395), 0.35)

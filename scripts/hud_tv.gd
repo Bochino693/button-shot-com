@@ -30,8 +30,20 @@ func pilula(l: Label, destaque := Color(0, 0, 0, 0), extra := 0.0) -> void:
 	_pilulas.append([l, destaque, extra])
 
 
+## Só redesenha quando algo mudou (sombra, transparência ou texto de um
+## rótulo): parado, o HUD não custa nada por quadro.
+var _assinatura := ""
+
+
 func _process(_d: float) -> void:
-	update()
+	var a := "%.3f" % sombra
+	for p in _pilulas:
+		var l: Label = p[0]
+		if is_instance_valid(l):
+			a += "|%s%.3f%s%d" % [str(l.visible), l.modulate.a * l.self_modulate.a, l.text, int(l.rect_position.x)]
+	if a != _assinatura:
+		_assinatura = a
+		update()
 
 
 func _draw() -> void:

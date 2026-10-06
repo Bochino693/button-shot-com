@@ -1,6 +1,6 @@
 @echo off
 setlocal
-rem BOTAO_BUILD=17
+rem BOTAO_BUILD=18
 rem Script interno: quem chama e o GERAR_APK_AGORA.bat (na raiz), pelo
 rem GERAR_APK_COMPLETO.ps1, que ja deixa o Godot 3.6.2, o modelo Android,
 rem o Java e a chave de assinatura prontos.

@@ -72,7 +72,6 @@ func _ready() -> void:
 
 	Jogo.ambiente(0.0)
 	Jogo.musica_fundo()
-	Jogo.preaquecer_ceus()
 
 
 ## Faixa dos campeões: escudo + taça + nº de títulos, do mais campeão.

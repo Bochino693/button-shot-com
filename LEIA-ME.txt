@@ -1,4 +1,4 @@
-CRAQUE DE BOTAO - FUTEBOL DE MESA (build 17)
+CRAQUE DE BOTAO - FUTEBOL DE MESA (build 18)
 Futebol de botao para Android com UMA placa zero delay para os dois jogadores
 (ou duas placas, uma por jogador) e tela de toque, Godot 3.6. Instala POR CIMA das versoes anteriores
 (mesmo pacote): nao fica icone repetido.
@@ -51,6 +51,40 @@ COMANDOS (so manche + 1 botao)
   * MENU > OPCOES > CONFIGURAR CONTROLES: ver a ligacao, CONFIGURAR PLACA
     (grava os pinos numa placa e vale para as duas), JOGADOR 1 (diz qual
     placa e do jogador 1), TESTAR (luzes) e PADRAO.
+
+NOVIDADES DA BUILD 18
+  * TRANSIÇÕES RÁPIDAS: a capa ("PREPARANDO O ESTÁDIO", "A FESTA DO
+    CAMPEÃO") aparece já no primeiro quadro (antes levava de 2 a 15 s com a
+    tela parada) e o estádio é montado em 5 etapas atrás dela, com a barra
+    andando de verdade. A troca de tela agora é um escurecer curto (0,18 s)
+    e não monta mais a cena duas vezes para conferir.
+  * CÉU MAIS LEVE: o céu do motor recalculava os reflexos (radiance) a cada
+    estádio, o que pesava na TV box; agora é uma cúpula pintada com a mesma
+    imagem: mesmo visual, sem o cálculo.
+  * 3D MAIS NÍTIDO: começa em 1080p e nunca desce de 720p; se a TV box não
+    aguentar 60 quadros, trava em 30 lisos em vez de borrar a imagem.
+  * VOO DA CÂMERA MAIS CURTO (no máximo ~11 s) e mais firme.
+  * CARTÕES ESTILO TRANSMISSÃO DE TV: a faixa do estádio (com a cor do time
+    da casa), o confronto (as duas metades entram deslizando com brilho), as
+    estatísticas (barras crescem) e o anel da contagem são peças prontas que
+    só se movem: nada é redesenhado a cada quadro, então não engasga.
+  * TEXTOS SEMPRE DENTRO DA CAIXA: o nome do estádio e a linha de baixo
+    escolhem o tamanho de letra que cabe (ex.: "ESTADIO ULLEVAAL • OSLO •
+    CHUVA" não sai mais da faixa).
+  * 3D PRÉ-PROCESSADO DE VERDADE: o jogo compila os shaders em segundo
+    plano (para nunca congelar), mas a capa sumia antes de a compilação
+    acabar: o show começava com o desenho genérico (lento e travando) e a
+    medição achava a TV box fraca, baixava a qualidade e repetia o
+    preparo (capa demorada). Agora a capa espera o motor terminar de
+    compilar, mede só quadros limpos e só então revela. Da segunda vez em
+    diante tudo vem do cache: a capa passa rápido.
+  * GOL DA ABERTURA: a rede da abertura Lazer & Sport tem o mesmo tamanho do
+    gol da partida (dentro da pequena área).
+  * REDE BALANÇA NA PARTIDA: no gol a rede estufa para fora e balança até
+    parar, com as traves paradas no lugar.
+  * SEM AVISOS DESNECESSÁRIOS: saiu "MANDANTE" e "A BOLA CORRE MENOS" da
+    apresentação e do aviso de clima da partida (fica só "DIA DE CHUVA" /
+    "NOITE COM CHUVA").
 
 NOVIDADES DA BUILD 17
   * CIDADE SEM TRAVAR: a apresentação desenhava ~280 peças separadas por

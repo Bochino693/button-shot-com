@@ -1,6 +1,6 @@
 @echo off
 setlocal
-rem BOTAO_BUILD=17
+rem BOTAO_BUILD=18
 title Craque de Botao - Gerar APK Android
 cd /d "%~dp0"
 
