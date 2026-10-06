@@ -13,7 +13,7 @@ Set-Location $Raiz
 # (BOTAO_BUILD=...): se a pasta tiver arquivos de builds diferentes
 # misturados (zip novo extraido por cima de um velho), a geracao para aqui,
 # antes de fazer qualquer coisa.
-$Build = 17
+$Build = 18
 $VersaoGodot = "3.6.2"
 $VersaoModelos = "3.6.2.stable"
 $UrlBase = "https://github.com/godotengine/godot/releases/download/3.6.2-stable"
