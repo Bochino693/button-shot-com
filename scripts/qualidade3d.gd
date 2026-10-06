@@ -113,6 +113,8 @@ func confirmar() -> void:
 func _process(delta: float) -> void:
 	if not travado:
 		return
+	if VisualServer.get_render_info(VisualServer.INFO_SHADER_COMPILES_IN_FRAME) > 0:
+		return                  # quadro de compilação não diz nada da TV box
 	_deltas.append(delta)
 	if _deltas.size() < JANELA:
 		return

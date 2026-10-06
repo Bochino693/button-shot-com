@@ -71,6 +71,17 @@ NOVIDADES DA BUILD 18
   * TEXTOS SEMPRE DENTRO DA CAIXA: o nome do estádio e a linha de baixo
     escolhem o tamanho de letra que cabe (ex.: "ESTADIO ULLEVAAL • OSLO •
     CHUVA" não sai mais da faixa).
+  * 3D PRÉ-PROCESSADO DE VERDADE: o jogo compila os shaders em segundo
+    plano (para nunca congelar), mas a capa sumia antes de a compilação
+    acabar: o show começava com o desenho genérico (lento e travando) e a
+    medição achava a TV box fraca, baixava a qualidade e repetia o
+    preparo (capa demorada). Agora a capa espera o motor terminar de
+    compilar, mede só quadros limpos e só então revela. Da segunda vez em
+    diante tudo vem do cache: a capa passa rápido.
+  * GOL DA ABERTURA: a rede da abertura Lazer & Sport tem o mesmo tamanho do
+    gol da partida (dentro da pequena área).
+  * REDE BALANÇA NA PARTIDA: no gol a rede estufa para fora e balança até
+    parar, com as traves paradas no lugar.
   * SEM AVISOS DESNECESSÁRIOS: saiu "MANDANTE" e "A BOLA CORRE MENOS" da
     apresentação e do aviso de clima da partida (fica só "DIA DE CHUVA" /
     "NOITE COM CHUVA").

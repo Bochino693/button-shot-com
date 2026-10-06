@@ -9,7 +9,12 @@ extends Node
 ##      que travava a TV box por segundos e podia até fechar o jogo).
 ##   1. aquecer: a câmera passa por todos os planos do show (um ou dois
 ##      quadros cada). O Android compila ali, atrás da capa, todos os shaders
-##      e sobe todas as texturas que o show vai usar.
+##      e sobe todas as texturas que o show vai usar. A compilação é
+##      assíncrona (project.godot): o motor desenha com um shader genérico
+##      lento enquanto compila em segundo plano. Por isso a câmera continua
+##      girando pelos planos até o motor dizer que não há mais nada
+##      compilando (uma volta inteira sem compilação); só então mede e revela.
+##      Sem essa espera o show começava ainda compilando: lento e travado.
 ##   2. medir: alguns quadros nos planos mais pesados (a cidade e a câmera da
 ##      TV). Se a TV box não segura o ritmo, desce um degrau de qualidade
 ##      (qualidade3d.gd), aquece de novo as variações novas e mede outra vez.
@@ -26,6 +31,7 @@ const BRILHO = preload("res://imagens/brilho.png")
 const MAX_RODADAS := 3
 const LOTE := 10                 # peças reveladas por quadro
 const LIMITE_PREPARO := 9.0      # s: depois disso (já medido uma vez) revela
+const LIMITE_COMPILAR := 6.0     # s: espera máxima (por rodada) pela compilação
 
 var vp: Viewport
 var tela: TextureRect
@@ -48,6 +54,11 @@ var _total := 1
 var _meia_taxa := false
 var _ja_calibrado := false     # esta TV box já foi medida: não mede de novo
 var _montagem := 1.0           # 0..1: montagem do estádio (antes do preparo)
+var _giro := 0                 # plano mostrado enquanto espera a compilação
+var _quietos := 0              # quadros seguidos sem shader compilando
+var _espera := 0.0             # s esperando a compilação nesta rodada
+var _compilou := false         # viu shader compilando nesta rodada
+var _compilado := false
 const PARTE_MONTAGEM := 0.35   # quanto da barra é a montagem
 
 var _capa: Control
@@ -154,7 +165,7 @@ func preparar(mundo_: Node, posicionar: FuncRef, amostras: Array, medir_em: Arra
 	_encher_fila(1 if _ja_calibrado else 2)
 	if _ja_calibrado:
 		_medir_em = []
-	_total = _fila.size() + _medir_em.size() * 2 + int(ceil(_ocultos.size() / float(LOTE)))
+	_total = _fila.size() + _amostras.size() + _medir_em.size() * 2 + int(ceil(_ocultos.size() / float(LOTE)))
 	_posicionar.call_func(_amostras[0])
 	_ult_us = OS.get_ticks_usec()
 
@@ -204,6 +215,9 @@ func _process(delta: float) -> void:
 	var agora := OS.get_ticks_usec()
 	var dt := (agora - _ult_us) / 1000000.0
 	_ult_us = agora
+	var compilando := VisualServer.get_render_info(VisualServer.INFO_SHADER_COMPILES_IN_FRAME) > 0
+	if compilando:
+		_compilou = true
 	# 0. revelar aos poucos (poucos shaders novos por quadro)
 	if not _ocultos.empty():
 		for _i in range(LOTE):
@@ -228,6 +242,21 @@ func _process(delta: float) -> void:
 			_quadros = 0
 			_progresso += 1.0
 		return
+	# 1b. esperar a compilação: gira pelos planos até uma volta inteira
+	# sem nenhum shader compilando
+	if not _compilado:
+		_quietos = 0 if compilando else _quietos + 1
+		_espera += dt
+		# nada compilou (tudo veio do cache): dois quadros quietos bastam
+		var precisa: int = _amostras.size() if _compilou else 2
+		if _quietos <= precisa and _espera < LIMITE_COMPILAR:
+			_posicionar.call_func(_amostras[_giro % _amostras.size()])
+			_giro += 1
+			_progresso = min(_progresso + 0.5, float(_total) - _medir_em.size() * 2)
+			return
+		_compilado = true
+		print("Palco3D: shaders prontos em %.1f s (%.1f s de espera)" % [_relogio, _espera])
+		_quadros = 0
 	if _relogio > LIMITE_PREPARO and _rodadas > 0:
 		_revelar()
 		return
@@ -242,6 +271,8 @@ func _process(delta: float) -> void:
 	if _quadros == 0:
 		_posicionar.call_func(_medir_em[i])
 	_quadros += 1
+	if _relogio < LIMITE_PREPARO and compilando:
+		return                      # quadro com shader compilando não conta
 	if _quadros > 3:
 		_medidas.append(dt)
 		if _medidas.size() % 12 == 0:
@@ -271,9 +302,13 @@ func _avaliar() -> void:
 		_meia_taxa = true
 		_revelar()
 		return
-	# as variações novas (sem sombra, sem brilho...) aquecem de novo
+	# as variações novas (sem sombra, sem brilho...) aquecem e compilam de novo
 	_encher_fila(1)
-	_total += _fila.size() + _medir_em.size() * 2
+	_compilado = false
+	_compilou = false
+	_quietos = 0
+	_espera = 0.0
+	_total += _fila.size() + _amostras.size() + _medir_em.size() * 2
 
 
 func _revelar() -> void:

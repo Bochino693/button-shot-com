@@ -122,6 +122,8 @@ var banner_sub: Label
 var dica: Label
 var flash: ColorRect
 var redes := []
+var _rede_bal := [-1.0, -1.0]   # segundos desde o gol em cada rede (-1: parada)
+var _rede_base := []
 var painel_disputa: Control
 var lbl_disputa := []
 
@@ -258,6 +260,7 @@ func _montar_mesa() -> void:
 		r.position = Vector2(x - (Campo.GOL_FUNDO + 4) if lado == 0 else x - 4, Campo.CENTRO.y - Campo.GOL_MEIA - 8)
 		mesa.add_child(r)
 		redes.append(r)
+		_rede_base.append(r.position)
 	mira = Mira.new()
 	mesa.add_child(mira)
 	poeira = CPUParticles2D.new()
@@ -864,6 +867,7 @@ func _manche_segurando(delta: float) -> void:
 func _process(delta: float) -> void:
 	_t += delta
 	_medir_quadro(delta)
+	_animar_redes(delta)
 	if estado == VEZ or estado == MOVENDO:
 		if disputa.empty():
 			tempo = max(0.0, tempo - delta)
@@ -2294,17 +2298,28 @@ func _tremer(dur: float) -> void:
 	tw.start()
 
 
+## A rede estufa para fora com a bola e balança até parar (como na abertura).
 func _rede_balanca(lado: int) -> void:
-	var r: Sprite = redes[lado]
-	var base := r.position
-	var tw := Tween.new()
-	r.add_child(tw)
-	tw.connect("tween_all_completed", tw, "queue_free")
-	var s := -1.0 if lado == 0 else 1.0
-	for i in range(6):
-		var k := 1.0 - i / 6.0
-		tw.interpolate_property(r, "position", base + Vector2(s * 5.0 * k * (1 if i % 2 == 0 else -0.5), 0), base, 0.12, Tween.TRANS_SINE, Tween.EASE_OUT, i * 0.12)
-	tw.start()
+	_rede_bal[lado] = 0.0
+
+
+func _animar_redes(delta: float) -> void:
+	for lado in [0, 1]:
+		if _rede_bal[lado] < 0.0:
+			continue
+		var u: float = _rede_bal[lado] + delta
+		var bal := 0.0
+		if u < 1.8:
+			bal = max(exp(-u * 3.0) * cos(u * 12.0), -0.2)
+			_rede_bal[lado] = u
+		else:
+			_rede_bal[lado] = -1.0
+		var r: Sprite = redes[lado]
+		r.scale.x = 0.5 * (1.0 + 0.35 * bal)
+		# estufa para fora do campo: as traves (a boca do gol) ficam no lugar
+		r.position.x = _rede_base[lado].x
+		if lado == 0:
+			r.position.x -= r.texture.get_width() * (r.scale.x - 0.5)
 
 
 func _soltar_confete(time: int) -> void:
