@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/torcida.ogg-d62f5913f39180bdbacff59fee8acf94.oggstr"
+
+[deps]
+
+source_file="res://sons/torcida.ogg"
+dest_files=[ "res://.import/torcida.ogg-d62f5913f39180bdbacff59fee8acf94.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

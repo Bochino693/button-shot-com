@@ -1,0 +1,9 @@
+SONS DA TORCIDA (gravados)
+Coloque aqui os sons (OGG, WAV ou MP3) com o MOMENTO no comeco do nome:
+  gol_1.ogg, gol_2.ogg ...            gol (qualquer time)
+  grito_1.ogg ...                     gritos (reserva; a trave usa o "uuuuh" do jogo)
+  comemoracao_1.ogg ...               festa (gol do mandante, vitoria, titulo)
+  vaia_1.ogg ...                      vaia (mandante tomou gol ou perdeu)
+  abertura_1.ogg ...                  apresentacao 3D do estadio na Copa
+Varios do mesmo momento: o jogo sorteia um. Sem nenhum: usa o som de
+fabrica. Depois de colocar, gere o APK de novo (GERAR_APK_AGORA.bat).

@@ -1,0 +1,449 @@
+CRAQUE DE BOTAO - FUTEBOL DE MESA (build 17)
+Futebol de botao para Android com UMA placa zero delay para os dois jogadores
+(ou duas placas, uma por jogador) e tela de toque, Godot 3.6. Instala POR CIMA das versoes anteriores
+(mesmo pacote): nao fica icone repetido.
+
+COMO GERAR O APK (sempre assim)
+  1. Extraia o zip inteiro numa pasta do PC.
+  2. De dois cliques em GERAR_APK_AGORA.bat (na primeira vez ele baixa o
+     Godot 3.6.2 e os modelos do Android; precisa do Java 17 e do SDK Android
+     em C:\AndroidSdk, igual aos outros jogos).
+  3. O APK sai em build\android\CraqueDeBotao.apk.
+  4. Copie para o pendrive e instale no aparelho.
+  O Godot do PC exporta sempre em modo GLES2 (so no PC: o jogo continua
+  GLES3 na TV box). Na build 5 a primeira versao do gerador abria o Godot
+  em GLES3 e ele fechava sozinho sem criar o APK em algumas placas de video.
+  Se aparecer "o arquivo ja esta sendo usado por outro processo": era o
+  Gradle de uma geracao anterior preso em segundo plano. O gerador agora
+  fecha esses processos sozinho e usa um registro novo a cada vez; se
+  mesmo assim falhar, reinicie o PC e rode de novo.
+
+LIGACAO EM UMA PLACA (padrao, economia): veja docs\DIAGRAMA_PLACA_UNICA.png
+  * JOGADOR 1: manche no conector JOYSTICK + botao em K1 (ou qualquer porta
+    livre). JOGADOR 2: as 4 microchaves do manche em K5 (cima), K6 (baixo),
+    K7 (esquerda), K8 (direita), o comum delas no GND, e o botao em K2.
+  * Com uma placa ligada o jogo entra sozinho no modo UMA PLACA. Depois de
+    ligar, va em MENU > OPCOES > CONFIGURAR CONTROLES > CONFIGURAR PLACA e
+    aperte o que o jogo pedir (5 do jogador 1, depois 5 do jogador 2): fica
+    gravado mesmo que a numeracao da sua placa seja diferente. TESTAR mostra
+    as luzes de cada jogador.
+
+LIGACAO EM DUAS PLACAS (opcional): veja docs\DIAGRAMA_PLACAS.png
+  * Duas placas IGUAIS (paralelas): manche no conector JOYSTICK e o botao na
+    porta L3 (ou em qualquer porta de botao) - igual nas duas.
+  * Placa 1 = jogador 1, placa 2 = jogador 2. Em jogo de 2 jogadores, antes
+    do apito, o jogo pede: "JOGADOR DO <time da casa>: APERTE O BOTAO DA SUA
+    PLACA". Assim nunca fica trocado, mesmo que o aparelho troque a ordem.
+  * Chave de modo da placa (se tiver): LS (analogico) ou DP (digital).
+
+COMANDOS (so manche + 1 botao)
+  * BOTAO: e tudo. Na abertura = START. Nos menus = confirmar (escolher
+    time: aperte uma vez para marcar e de novo para confirmar). Na partida:
+    SEGURE e a barra de forca sobe e desce; SOLTE na altura certa = chute.
+    O botao de qualquer uma das duas placas da START e escolhe os times.
+  * MANCHE CIMA/BAIXO: na sua vez, troca o tazo (do mais perto da bola ao
+    mais longe). Na vez do adversario, mexe o SEU goleiro (se nao mexer, ele
+    se posiciona sozinho). Nos menus, anda entre os botoes da tela.
+  * MANCHE ESQUERDA/DIREITA: gira a seta (toque = ajuste fino; segurando,
+    gira mais rapido).
+  * 1 jogador contra a CPU: joga em QUALQUER uma das duas placas.
+  * Toque na tela continua valendo (toque no seu tazo; na beirada = forte).
+  * MENU > OPCOES > CONFIGURAR CONTROLES: ver a ligacao, CONFIGURAR PLACA
+    (grava os pinos numa placa e vale para as duas), JOGADOR 1 (diz qual
+    placa e do jogador 1), TESTAR (luzes) e PADRAO.
+
+NOVIDADES DA BUILD 17
+  * CIDADE SEM TRAVAR: a apresentação desenhava ~280 peças separadas por
+    quadro nos planos da cidade (cada caixa, placa, poste e brilho era uma
+    chamada de desenho na TV box). Agora as peças paradas são fundidas por
+    material e todos os brilhos (refletores, estrias, sol, lua, flashes) saem
+    num desenho só: 50 a 85 chamadas no plano mais pesado. Não era de
+    propósito: era o motor desenhando peça por peça.
+  * SOL E LUA NO FUNDO DO CÉU: eles acompanham a câmera como o céu, ficam
+    sempre longe e menores; não "crescem" mais quando a câmera voa.
+  * ESTÁDIOS NO ESTILO DOS REAIS:
+    - Brasil: Maracanã (oval, dois anéis, anel branco de cobertura)
+    - Argentina: Monumental (oval aberto, torres de luz)
+    - Itália: Olímpico de Roma (pista de atletismo, membrana com mastros)
+    - França: Stade de France (teto "flutuando" sobre mastros finos)
+    - Alemanha: Arena de Munique (fachada de almofadas que acendem)
+    - Noruega: Ullevaal (compacto, quatro arquibancadas cobertas)
+    - Suécia: Friends Arena (caixa arredondada, fachada de metal)
+    - Austrália: Stadium Australia (os dois grandes arcos)
+    - Inglaterra: Wembley (o grande arco branco)
+    - Espanha: Bernabéu (todo coberto, lâminas metálicas)
+    Grama em volta do campo e câmera da TV por baixo do teto.
+  * PARTIDA LISA:
+    - a mira/barra de força era redesenhada do zero a cada quadro enquanto
+      o botão estava apertado (até 6 ms por quadro aqui; bem mais na TV
+      box): agora as formas ficam prontas e só são posicionadas (0,2 ms);
+    - física: os passos seguem a peça mais rápida e só confere pares que
+      estão perto (3,5 a 5,6x mais rápida, mesmo resultado);
+    - a montagem das peças fundidas leva ~6 ms (apagar peças na hora
+      travava a montagem; agora sai da cena e é apagada depois).
+  * GOL MAIOR: boca do gol de 124 para 156 (+26%), pequena área 64 x 208,
+    grande área 172 x 384 e marca do pênalti um pouco mais longe. Arte do
+    campo e redes refeitas com as mesmas medidas.
+  * BOLA PRESA REMOVIDA: o tiro de meta automático foi tirado. E o gol vale
+    quando o centro da bola passa a linha entre as traves (antes precisava
+    a bola inteira; bater na trave e no goleiro e entrar não contava).
+  * CÓDIGO MAIS LIMPO: funções e constantes que ninguém usava saíram
+    (parque da paisagem, nome de teclas, "escurecer" que não fazia nada...).
+
+NOVIDADES DA BUILD 16
+  * APRESENTACAO MAIS RAPIDA E LISA:
+    - a capa "PREPARANDO O ESTADIO" so mede a TV box na primeira vez; das
+      proximas vezes ela ja sabe a qualidade certa e a barra enche bem mais
+      rapido (antes media de novo toda partida);
+    - o voo da camera pelo estadio ficou cerca de 25% mais rapido, ainda
+      continuo (sem puxao);
+    - a faixa do confronto, os escudos, o VS e as barras de estatistica
+      entram juntos e rapido (cerca de 1 s, antes uns 3 s) e a contagem
+      comeca antes: do estadio ao jogo sao uns 5 s a menos.
+  * RISCO NA COR DO TIME: o filete ao lado de "COPA CRAQUE DE BOTAO" e da
+    legenda do cartao-postal era sempre da mesma cor; agora e a cor do time
+    da casa (e o do nome do estadio, a cor do dono do estadio). No podio,
+    a cor do campeao. Time de cor muito escura usa a segunda cor.
+  * REFLETORES MAIS SUTIS: halos menores e mais fracos, estria de lente
+    discreta e fachos de luz mais leves, no estadio 3D e na mesa a noite.
+  * A JOGADA NUNCA TRAVA:
+    - segurando o botao de chute: se o tempo da vez acaba com o botao
+      apertado, o chute sai na hora com a forca do momento (antes esperava
+      mais 4 s); quem ja esta segurando o botao quando a vez chega ve a
+      barra correr na hora (soltar chuta), sem precisar soltar e apertar;
+    - adversario (CPU): se a conta da jogada demora (TV box ocupada), a CPU
+      joga uma jogada simples em ate 1,2 s, sem esperar; e nas faltas,
+      laterais e escanteios ela tambem so cobra com o cobrador.
+
+NOVIDADES DA BUILD 15
+  * UMA PLACA PARA OS DOIS JOGADORES (economia): veja a ligacao acima e o
+    diagrama docs\DIAGRAMA_PLACA_UNICA.png. A tela CONFIGURAR CONTROLES
+    mostra a ligacao do J1 e do J2 e o CONFIGURAR PLACA grava os dois.
+  * PARTIDA NUNCA CONGELA COM JOGADORES PARADOS: se o tempo da vez acabava
+    durante uma cobranca (falta, lateral, escanteio), a cobranca continuava
+    valendo na vez do outro time e ninguem conseguia jogar (sumia de quem era
+    a vez). Agora a cobranca se perde quando o tempo acaba. Alem disso:
+    - a vez tem limite duro: botao "preso" (o soltar se perdeu) chuta
+      sozinho; mira de toque aberta e cancelada;
+    - um vigia destrava qualquer momento parado demais (evento, preparo).
+  * W.O.: dois jogadores sem jogar por 6 vezes seguidas (3 de cada, cerca
+    de 2 minutos) = a partida termina (fica o placar; empate em jogo que
+    decide vai no sorteio). Um jogador sumido contra a CPU (4 vezes) = W.O.
+    para a CPU (3 gols). Antes do W.O. aparece o aviso "MAIS UMA E E W.O.".
+
+NOVIDADES DA BUILD 14
+  * COMECO DA APRESENTACAO SEM AGARRAR: durante o preparo (atras da capa)
+    o jogo desenha uma vez, escondido, cada texto e painel do show (nome do
+    estadio, faixa do confronto, estatisticas, contagem, confete): o
+    Android prepara letras e efeitos ali, e nao no meio do show. A capa sai
+    mais rapido e sem os brilhos grandes por cima do 3D, e a camera parte
+    parada e acelera suave (antes ja saia em movimento).
+  * (REMOVIDO NA BUILD 17) BOLA PRESA = TIRO DE META: bola encostada no goleiro e na trave, ou
+    espremida entre o goleiro e a linha do gol, ou parada colada no gol por
+    tres jogadas seguidas: o jogo apita "BOLA PRESA" e da tiro de meta para
+    quem defende.
+  * As dicas de jogo ficam so na capa de carregamento (sairam da partida).
+
+NOVIDADES DA BUILD 13
+  * APRESENTACAO SEM "PUXAO": o tempo de cada trecho do voo da camera agora
+    sai da distancia e do giro (velocidade quase constante, olhar girando
+    no maximo 40 graus por segundo). Antes um trecho ia a 140 m/s e o
+    olhar girava rapido demais, e parecia que algo puxava a imagem. No Rio,
+    depois do Cristo a camera faz um sobrevoo do estadio em vez de cruzar a
+    cidade correndo.
+  * RITMO DOS QUADROS: o jogo prefere manter 60 quadros (baixa a resolucao
+    do 3D se precisar) e liga a suavizacao de tempo do Godot (delta
+    smoothing), que tira o tremido de ritmo no Android. 30 quadros
+    cravados so em ultimo caso.
+  * COBRANCAS: na falta, no escanteio e no lateral so o tazo cobrador joga.
+    O manche (cima/baixo) e o toque na tela nao trocam mais de tazo; o
+    cobrador fica destacado e a dica diz quem cobra.
+  * GOLEIROS COM UNIFORME DO TIME: cada goleiro tem a camisa de goleiro do
+    time, contorno e faixa do peito nas cores da selecao, o escudo no meio
+    e luvas. Argentina e Suecia trocaram o verde (sumia no gramado) por
+    azul-marinho e grafite.
+  * DICAS DE JOGO: na capa "PREPARANDO O ESTADIO" e nas esperas da partida
+    (vez da CPU, intervalo) aparecem dicas de regras e jogadas.
+
+NOVIDADES DA BUILD 12
+  * PARTIDA SEM TRANCO NOS CHUTES FORTES: faiscas, fogos, confete, aura do
+    tazo e cartao usavam efeitos que o Android so preparava na primeira
+    vez que apareciam (o tranco vinha justo no chute forte ou no gol).
+    Agora uma "vitrine" invisivel desenha cada efeito uma vez na entrada
+    da partida, e as faiscas usam um material so.
+  * CARTAO AMARELO NITIDO: o cartao preso no tazo e desenhado em vetor,
+    liso em 1080p (antes era uma imagem pequena reduzida, serrilhada).
+  * TIME DO PENDRIVE NA ESCOLHA DE TIMES: a ultima vaga e sempre do time do
+    pendrive. Sem time, aparece VAZIO (toque para carregar o logo); com
+    time, ele aparece como os outros. O botao PENDRIVE carrega, troca ou
+    apaga o time na hora, sem sair da tela.
+  * CAPA "PREPARANDO O ESTADIO" LISA: nada correndo na tela durante o
+    preparo (so a barra enchendo suave), entao nao aparece tranco.
+  * APRESENTACAO MAIS NITIDA E CONSTANTE: a TV box comeca com o 3D em
+    resolucao maior (1600x900, ampliado com filtro). Se a TV box nao
+    segura 60 quadros nem em 720p, o show roda a 30 quadros cravados, sem
+    oscilar entre 30 e 60, que e o que dava a sensacao de "trava um pouco".
+  * LONDRES: a roda gigante (London Eye) foi para o outro lado do rio, longe
+    do estadio (antes parecia estar dentro dele).
+
+NOVIDADES DA BUILD 11
+  * APRESENTACAO LISA NA TV BOX: perfil proprio para TV box (Android). O 3D
+    roda sem HDR, sem sombra em tempo real e sem refletor de luz real (o
+    que mais pesava); a cidade fica inteira perto do estadio e mais rala
+    longe (a neblina disfarca), relevo e carros mais leves. No banco de
+    testes o quadro ficou 3 a 5 vezes mais leve. O show anda em tempo real
+    (antes, numa TV box lenta, ele ficava em "camera lenta").
+  * VOO DE CAMERA CONTINUO, SEM CORTE: a cidade, o mergulho por cima da
+    arquibancada, a torcida e os bandeiroes, rente aos tazos ate a bola e
+    a subida para a camera da TV, tudo num movimento so, sem tranco e sem
+    a cortina que cortava a tela.
+  * CRISTO REDENTOR DE VOLTA: maior, e no Rio a apresentacao abre de frente
+    para ele (iluminado a noite), depois desce sobre a cidade ate o estadio.
+  * EFEITO DE LUZ: refletores com halo e estria de luz (como a lente da TV
+    ve), fachos de luz com borda suave que somem perto da camera, gramado
+    iluminado de noite, estria no sol de dia. Ceu noturno nitido com
+    estrelas redondas (antes eram quadradinhos).
+  * SEM FAIXAS PRETAS: a imagem ocupa a tela inteira; marca, fase, legenda,
+    contagem e dicas ficam em pilulas de vidro arredondadas.
+  * L3 (E QUALQUER BOTAO DA PLACA) SELECIONA: no Android, placas zero delay
+    genericas mandam os botoes com numeros altos, que o jogo nao lia. Agora
+    qualquer botao da placa confirma nos menus e chuta na partida.
+
+NOVIDADES DA BUILD 10
+  * COPA VOLTA A ENTRAR NA PARTIDA: a lista de arquivos da build
+    (tools\gerar_apk\arquivos_build.txt) estava velha e o gerador de APK
+    tirava do projeto arquivos novos (qualidade3d.gd, palco3d.gd, shaders
+    da cidade, Cristo, som da trave), guardando-os em
+    sobras_de_versoes_antigas. Sem eles a apresentacao 3D nao abria e o
+    JOGAR ficava parado na chave. A lista agora tem todos os arquivos.
+    Extraia o zip INTEIRO por cima, respondendo SIM para substituir tudo.
+  * Se um dia uma tela nao carregar, o jogo nao fica preso: a apresentacao
+    cai direto na partida e o podio volta para a chave.
+  * APRESENTACAO 3D DOS ESTADIOS SEM ENGASGO (Copa, amistoso e podio):
+    antes do show aparece a capa "PREPARANDO O ESTADIO" (escudos e barra
+    de progresso). Atras dela a camera passa por todos os planos, o
+    Android compila todos os shaders e a qualidade certa para a TV box e
+    medida e escolhida. So entao a capa some e o show roda liso, com a
+    qualidade travada (nada de trocar sombra/brilho no meio, que era o
+    que fazia "ciscar"). Se nem a qualidade mais leve segura 60 quadros,
+    o show roda a 30 cravados (ritmo sempre igual). A camera nunca da
+    pulo, mesmo se um quadro atrasar.
+  * NADA QUADRADO: a imagem 3D agora e ampliada para a TV com filtro (antes
+    saia com pixel "quadrado"); sem MSAA liga o FXAA (bordas lisas).
+  * CAMERA DE TRANSMISSAO: 4 planos rapidos e firmes (a cidade e o
+    estadio, a torcida e os bandeiroes rente ao gramado, rente aos tazos
+    ate a bola, a camera da TV), com corte coberto por uma cortina de luz
+    na cor do mandante com o escudo.
+  * UI MODERNA: nome do estadio num painel de vidro arredondado com o
+    escudo, estatisticas em painel de vidro com barras arredondadas,
+    faixa do confronto com bordas lisas, contagem em anel dourado e a dica
+    "APERTE O BOTAO PARA PULAR".
+  * A qualidade aprendida nas builds 8/9 foi zerada (a medida antiga
+    podia ter ficado baixa demais por causa dos engasgos).
+
+NOVIDADES DA BUILD 9
+  * ABERTURA LAZER & SPORT GAMES NOVA (e leve, sem 3D na largada: a da
+    build 8 ficava com a tela preta em algumas TV boxes): na mesa do jogo,
+    os tazos das selecoes tabelam (Brasil, Argentina, Italia, Franca,
+    Alemanha), o ultimo passe vai para o tazo da Lazer & Sport, que chuta e
+    faz o gol; rede balanca, GOOOL!, torcida; depois a marca aparece.
+  * CARTAO AMARELO MARCADO NO TAZO: quem levou amarelo fica com um
+    cartaozinho amarelo preso no tazo ate o fim da partida (outra falta
+    desse tazo = expulso).
+  * Shaders no Android voltaram ao modo da build 7 (o modo novo e o
+    principal suspeito da tela preta em algumas placas de video).
+
+NOVIDADES DA BUILD 8
+  * QUALIDADE AUTOMATICA: o jogo mede os quadros por segundo da TV box e,
+    se for preciso, reduz sozinho resolucao do 3D, antisserrilhado, sombras
+    e chuva (no 3D) e desenha a mesa da partida em 720p (no 2D). A escolha
+    fica salva: da proxima vez ja comeca no ponto certo.
+  * CIDADES DE VERDADE em volta do estadio: ruas de asfalto com faixas,
+    faixa de pedestre e calcadas, quarteiroes cheios de predios de frente
+    para a rua (terreo com vitrines e toldos, janelas com moldura, cornija,
+    caixa d'agua, sacadas), carros andando nas duas maos (farol aceso a
+    noite), postes iluminando as calcadas, arvores nas calcadas.
+  * RELEVO NOVO: morros e montanhas com cristas e vales, rocha nas encostas,
+    neve so nos cumes, mata nas encostas (milhares de arvores); fiordes de
+    paredes ingremes na Noruega, Alpes atras de Munique.
+  * CRISTO REDENTOR modelado (tunica com pregas, bracos abertos, cabeca,
+    pedestal) no alto do Corcovado, iluminado a noite; Pao de Acucar novo.
+  * TAZOS 30% MAIORES, com o escudo do pais bem maior; a cor do uniforme
+    (casa ou fora) continua em volta do escudo. Brasao da Espanha no meio
+    do escudo (nao corta mais) e a Union Jack inteira na Australia.
+  * BOLA NA TRAVE: som de metal na hora e, logo depois, o "UUUUH!" da
+    torcida (nada de vaia). Abertura Lazer & Sport sem burburinho: so a
+    comemoracao do gol.
+
+NOVIDADES DA BUILD 7
+  * SEM TRAVAR na entrada da apresentacao 3D e do podio (depois de ser
+    eliminado): o ceu 3D era recalculado do zero a cada vez; agora e feito
+    uma vez so (ja na tela de abertura) e reaproveitado.
+  * FIM DA COPA para quem foi eliminado: tela com a colocacao (eliminado
+    nas quartas, na semi, 4o, 3o, vice) e dois botoes: VOLTAR AO MENU ou VER
+    O PODIO. Na tela final da partida o botao de qualquer placa confirma,
+    mesmo sem botao em foco; a pausa nao abre mais em cima dela.
+  * GRAFICOS 3D com LUZ DE VERDADE: sol com sombras de dia, lua e os 4
+    refletores a noite, predios com vidro e janelas acesas, montanhas lisas
+    (sem "escadinha"), torcida nova (16 tipos de torcedor com volume,
+    cabelos, bones, cachecol, bandeirinha, palmas) mais cheia e sem borda
+    serrilhada, antisserrilhado 4x no 3D.
+  * TAZOS NITIDOS em 1080p/4K: textura em 512 px com o contorno desenhado
+    na propria imagem (a linha por cima saia serrilhada na TV box).
+  * CADA GRAMADO UNICO: tom de verde proprio de cada estadio e o corte da
+    grama bem marcado.
+  * ARENA LAZER & SPORT no PERI (Sao Paulo), na fabrica: o galpao com
+    telhado em dente de serra e o logo na fachada, o patio com os
+    brinquedos, caminhoes na doca, o bairro e a Serra da Cantareira. A
+    abertura Lazer & Sport tambem acontece la.
+  * LATERAL E ESCANTEIO: a bola sai do meio do cobrador, direto na linha do
+    pontilhado da mira (sem cobranca torta ou impossivel), e dois
+    companheiros chegam perto para receber o passe ou tabelar.
+  * SONS: o apito final no fim da partida; apito de falta so nas faltas (e
+    cartoes); lateral, escanteio, tiro de meta e tempo esgotado sem apito;
+    na apresentacao dos times nao tem mais "uuuh" nem vaia.
+
+NOVIDADES DA BUILD 6
+  * A CIDADE DE CADA PAIS em volta do estadio 3D (apresentacao e podio),
+    com o sol ou a lua bem a vista logo no comeco:
+      BRASIL: Rio, o Cristo Redentor no Corcovado, Pao de Acucar com o
+        bondinho, a baia, favelas nos morros (luzinhas a noite)
+      ARGENTINA: Buenos Aires, o Obelisco na avenida, as torres, o rio
+      NORUEGA: Bergen, fiorde, montanhas com neve, casinhas coloridas
+      FRANCA: Paris, Torre Eiffel (dourada e piscando a noite), o Sena,
+        Sacre-Coeur
+      ALEMANHA: Munique, torre olimpica, Frauenkirche, os Alpes
+      AUSTRALIA: Sydney, a Opera, a Harbour Bridge, a baia
+      ESPANHA: Barcelona, Sagrada Familia (com os guindastes), o mar
+      INGLATERRA: Londres, Big Ben, Parlamento, London Eye girando
+      ITALIA: Roma, Coliseu com os arcos, Sao Pedro, pinheiros
+      SUECIA: Estocolmo, a Prefeitura das tres coroas, ilhas
+      LAZER & SPORT: o parque (roda-gigante, montanha-russa, circos e o
+        painel com o logo)
+    A fachada do estadio por fora (pilares, rampas, faixa de LED). Chuva
+    ja caindo desde o primeiro quadro, com muito mais pingos.
+  * O NOME DO ESTADIO COM CIDADE E PAIS na apresentacao.
+  * AMISTOSO: depois dos times, ESCOLHA O ESTADIO (miniatura de cada um) ou
+    SORTEAR; o amistoso tambem tem a apresentacao 3D.
+  * PARTIDA A NOITE bem iluminada: o gramado claro e os fachos dos 4
+    refletores (o escuro fica so na arquibancada).
+  * MUSICAS: as suas (pasta musicas\fundo) sorteadas, uma diferente a cada
+    partida; quando uma acaba, entra outra. A batucada e o tema antigo
+    sairam. Para colocar mais: copie OGG/MP3 convertidos para OGG nessa
+    pasta. Torcida de fundo da partida = a gravacao que voce mandou.
+  * Cobrancas: o cobrador fica exatamente atras da bola, na linha da mira
+    (lateral, escanteio, falta, tiro de meta acertam a bola em cheio);
+    companheiros e adversarios saem da frente. Nenhum tazo fica preso
+    dentro do gol (se cair la, volta para a frente da linha).
+  * ABERTURA LAZER & SPORT refeita: estadio de verdade com a torcida nas
+    cores do jogo (dourado e azul-marinho), bandeiroes do Craque de Botao,
+    o craque de camisa dourada e chuteira verde; mais rapida (7 s), sem
+    desfoque, e os graficos ficam prontos antes de comecar (sem engasgo).
+
+NOVIDADES DA BUILD 5 (feita para a TV BOX PRO: graficos no maximo, GLES3)
+  * ABERTURA LAZER & SPORT GAMES, como um video: o craque (camisa rosa e
+    chuteira azul) corre, chuta em camera lenta, a bola faz a curva e estufa
+    a rede no angulo; os aneis do alvo saem e entra o logo da Lazer & Sport
+    com "LAZER & SPORT GAMES" embaixo. O botao pula.
+  * SONS GRAVADOS (pasta sons\torcida, veja o LEIA-ME de la):
+      - gol: grito de gol da torcida em todo gol;
+      - comemoracao (o canto "ole, ole"): gol do mandante, vitoria do
+        mandante, titulo;
+      - grito ("uuuh"): bola na trave, penalti perdido, apresentacao;
+      - vaia: quando o MANDANTE toma gol ou perde (enquanto nao houver uma
+        vaia gravada, usa a sintetizada);
+      - abertura: o estadio lotado na apresentacao 3D da Copa;
+      - apito do inicio, apito do intervalo/troca de lado, apito final,
+        som de START na tela de abertura e a festa de campeao no podio.
+  * CLIMA de verdade: DIA DE SOL (ceu azul e sol com brilho), DIA DE CHUVA
+    (ceu cinza, neblina, chuva), NOITE DE LUA (lua cheia brilhante,
+    refletores acesos com fachos, luzes da cidade, flashes e fogos) e NOITE
+    COM CHUVA. OPCOES > CLIMA escolhe ou sorteia; a chuva faz a bola correr
+    menos.
+  * Apresentacao da Copa estilo transmissao (PES / Bomba Patch): faixa do
+    confronto com as cores dos dois times entrando dos lados, escudos
+    firmes (sem pulsar), "VS" suave, brilho atravessando a faixa.
+  * Bandeiroes nitidos e sempre na frente da torcida (o pano so ondula
+    para fora); a torcida de longe nao pisca mais.
+  * Tazos com contorno nitido (borda e relevo desenhados) e filtragem
+    melhor; graminhas do sol mais finas, por baixo da bola e dos tazos.
+  * COPA:
+      - a VOLTA nao e mais pulada (o resultado da ida nao conta duas vezes);
+      - PRORROGACAO: empate no jogo decisivo (volta empatada no agregado,
+        3o lugar) = 2 tempos extras (PR1 e PR2) e, se continuar, penaltis;
+      - DISPUTA DO 3o LUGAR (jogo unico) entre os perdedores das semis,
+        antes da final;
+      - CHAVE nova: placar agregado e penaltis em cada jogo, caminho dos
+        vencedores em dourado, jogo atual brilhando, painel do proximo jogo
+        estilo TV;
+      - PODIO 3D no fim: o estadio do campeao a noite, o 3o e o vice
+        entrando, depois o CAMPEAO com a taca girando, confete, fogos e a
+        festa da torcida.
+
+NOVIDADES DA BUILD 4
+  * COPA: apresentacao da partida em 3D. A camera sobrevoa a torcida e os
+    bandeiroes do estadio do mandante e abre para o gramado com os tazos
+    perfilados; depois os escudos (VS), as estatisticas (chute, controle,
+    defesa, titulos, gols na Copa, forca geral) e uma contagem. A PARTIDA
+    COMECA SOZINHA no fim (o botao ainda pula a apresentacao, se quiser).
+  * Cada estadio e diferente: 1 ou 2 aneis de arquibancada, cobertura ou
+    nao, altura, cantos fechados, cores das cadeiras, o gramado e o escudo
+    do time; a torcida pula com as camisas dos dois times (a visitante numa
+    das cabeceiras).
+  * Clima na apresentacao: SOL (sombra da arquibancada no gramado), CHUVA
+    (ceu cinza, neblina, chuva caindo) e NOITE (ceu estrelado, refletores
+    acesos, flashes de fotos na torcida e fogos de artificio).
+  * Lateral e escanteio: a bola fica um pouco dentro do campo e o cobrador
+    no gramado, sempre a vista - nada de tazo escondido na torcida/placas
+    ou travado no canto.
+
+NOVIDADES DA BUILD 3
+  * Nome: CRAQUE DE BOTAO.
+  * Tazos um pouco maiores e toda a arte em resolucao dobrada (tazos,
+    goleiros, bola, sombras); na TV Full HD tudo sai nitido.
+  * Visao de TV: a mesa em perspectiva (OPCOES > VISAO DA MESA: TV ou de
+    cima).
+  * CLIMA (OPCOES > CLIMA: sorteado, sol, chuva ou noite):
+      - CHUVA: ceu cinza, chuva caindo, pocas, respingos quando a bola e os
+        tazos andam, som de chuva - e a BOLA CORRE MENOS (a CPU tambem sabe).
+      - SOL: campo seco, graminhas voando nos chutes e nas corridas.
+      - NOITE: estadio escuro, campo iluminado pelos refletores; graminhas.
+  * Troca de lado: no 2o tempo os times trocam de campo.
+  * Tiro de meta: o cobrador fica na frente da linha do gol (antes ficava
+    preso na trave).
+  * Os tazos nao entram mais no gol (uma parede invisivel so para os tazos
+    na boca do gol); a bola entra normal.
+  * COPA ATE 8 JOGADORES: COPA > QUANTOS JOGADORES? (1 a 8). Cada um escolhe
+    o seu time; o resto da chave e da CPU. Jogo de jogador contra jogador:
+    um em cada placa. Jogo contra a CPU: qualquer placa. Jogo so de CPU: e
+    decidido na hora. A chave mostra de quem e cada time (JOGADOR 1...).
+    Ida e volta, agregado e penaltis na volta, como antes.
+
+TIME DO PENDRIVE (escondido, so para o operador)
+  MENU > OPCOES e toque 5 vezes no titulo "OPCOES" (ou, no manche, aperte
+  ESQUERDA 5 vezes seguidas). Abre o painel TIME DO PENDRIVE:
+  1. No pendrive, pasta BOTAO com o logo (PNG ou JPG). O nome do arquivo
+     vira o nome do time. Ex.: "TIGRES FC.png".
+  2. O jogo mostra o logo, as cores e os dois uniformes. SALVAR TIME.
+  3. O time aparece junto com os outros na escolha dos times. APAGAR TIME
+     no mesmo painel.
+
+QUALIDADE DOS TIMES
+  CHUTE (forca do peteleco e peso), CONTROLE (barra mais calma, CPU mira
+  melhor), DEFESA (goleiro maior e mais rapido). Quem faz gol fica EMBALADO
+  por 40 s.
+
+REGRAS
+  * Tocou na bola: joga de novo, ate 3 toques seguidos (OPCOES). Nao tocou:
+    a vez passa.
+  * FALTA: acertar um tazo rival SEM encostar na bola. Batida forte =
+    amarelo; muito forte = vermelho. 2 faltas do mesmo tazo = amarelo.
+    Falta na propria grande area = PENALTI.
+  * Lateral, escanteio e tiro de meta. Relogio de 20 s por vez.
+  * Dois tempos (3 minutos cada, OPCOES), trocando de lado no intervalo.
+
+ARTE E SONS
+  Tudo desenhado e sintetizado por codigo (tools\gerar_arte.py,
+  tools\gerar_sons.py, tools\gerar_sons_clima.py e tools\gerar_arte_3d.py; dados em
+  dados\times.json). Escudos das selecoes = escudo com a bandeira (os
+  oficiais sao marcas registradas).

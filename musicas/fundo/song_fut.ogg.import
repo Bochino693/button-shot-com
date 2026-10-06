@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/song_fut.ogg-150ae37e056033b20ef4d3fffa1ae4c2.oggstr"
+
+[deps]
+
+source_file="res://musicas/fundo/song_fut.ogg"
+dest_files=[ "res://.import/song_fut.ogg-150ae37e056033b20ef4d3fffa1ae4c2.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

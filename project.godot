@@ -1,0 +1,48 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+[application]
+
+config/name="Craque de Botao"
+run/main_scene="res://cenas/intro.tscn"
+run/delta_sync_after_draw=true
+boot_splash/image="res://imagens/splash.png"
+boot_splash/bg_color=Color( 0.04, 0.06, 0.1, 1 )
+config/icon="res://imagens/icone.png"
+config/quit_on_go_back=false
+
+[autoload]
+
+Controles="*res://scripts/controles.gd"
+Jogo="*res://scripts/jogo.gd"
+
+[display]
+
+window/size/width=1280
+window/size/height=720
+window/size/fullscreen=true
+window/handheld/orientation="sensor_landscape"
+window/stretch/mode="2d"
+window/stretch/aspect="keep"
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[rendering]
+
+quality/driver/fallback_to_gles2=true
+quality/intended_usage/framebuffer_allocation=0
+quality/intended_usage/framebuffer_allocation.mobile=0
+vram_compression/import_etc=true
+gles3/shaders/shader_compilation_mode=2
+gles3/shaders/max_simultaneous_compiles=4
+gles3/shaders/shader_cache_size_mb=256
+environment/default_clear_color=Color( 0.04, 0.06, 0.1, 1 )

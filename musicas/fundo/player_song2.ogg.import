@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/player_song2.ogg-4a78a999d7a41d6b9415ddd46762a002.oggstr"
+
+[deps]
+
+source_file="res://musicas/fundo/player_song2.ogg"
+dest_files=[ "res://.import/player_song2.ogg-4a78a999d7a41d6b9415ddd46762a002.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/chuva.ogg-3767103a1a07b5d79d413e737d576edd.oggstr"
+
+[deps]
+
+source_file="res://sons/chuva.ogg"
+dest_files=[ "res://.import/chuva.ogg-3767103a1a07b5d79d413e737d576edd.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/grito_1.ogg-39758d21c757312991bedd2d5a9cf482.oggstr"
+
+[deps]
+
+source_file="res://sons/torcida/grito_1.ogg"
+dest_files=[ "res://.import/grito_1.ogg-39758d21c757312991bedd2d5a9cf482.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

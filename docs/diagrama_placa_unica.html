@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-br"><head><meta charset="utf-8">
+<title>Craque de Botão — ligação em uma placa</title>
+<style>
+  body { margin:0; background:#0e141c; font-family: "DejaVu Sans", Arial, sans-serif; color:#e8eef5; }
+  .pagina { width:1800px; padding:34px 40px; box-sizing:border-box; }
+  h1 { margin:0 0 4px; font-size:34px; letter-spacing:1px; color:#ffd21f; }
+  .sub { font-size:20px; color:#9fb3c8; margin-bottom:18px; }
+  svg text { font-family: "DejaVu Sans", Arial, sans-serif; }
+  table { border-collapse:collapse; width:100%; font-size:19px; margin-top:16px; }
+  th { text-align:left; background:#1b2735; color:#ffd21f; padding:10px 12px; font-size:18px; }
+  td { padding:9px 12px; border-bottom:1px solid #243242; vertical-align:top; }
+  td b { color:#fff; }
+  .j1 { color:#4fc3f7; font-weight:bold; } .j2 { color:#ff8a80; font-weight:bold; }
+  .notas { display:grid; grid-template-columns: 1fr 1fr; gap:14px 28px; margin-top:18px; font-size:18px; color:#c9d6e3; }
+  .nota { background:#152030; border-left:5px solid #2f8f3a; padding:10px 14px; border-radius:6px; }
+  .nota.am { border-color:#ffd21f; } .nota.vm { border-color:#e3303a; }
+</style></head><body><div class="pagina">
+<h1>CRAQUE DE BOTÃO — UMA PLACA ZERO DELAY PARA OS DOIS JOGADORES</h1>
+<div class="sub">Uma placa só (economia): <span class="j1">JOGADOR 1</span> no conector JOYSTICK + 1 botão &nbsp;•&nbsp; <span class="j2">JOGADOR 2</span> com o manche ligado em 4 portas de botão + 1 botão &nbsp;•&nbsp; USB na TV box.</div>
+<svg width="1720" height="760" viewBox="0 0 1720 760">
+  <defs>
+    <marker id="seta" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="15" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#9fb3c8"/></marker>
+  </defs>
+
+  <!-- ===================== PLACA ===================== -->
+  <rect x="560" y="150" width="600" height="420" rx="16" fill="#1d6b3a" stroke="#0c3b1e" stroke-width="4"/>
+  <circle cx="582" cy="172" r="8" fill="#0c3b1e"/><circle cx="1138" cy="172" r="8" fill="#0c3b1e"/>
+  <circle cx="582" cy="548" r="8" fill="#0c3b1e"/><circle cx="1138" cy="548" r="8" fill="#0c3b1e"/>
+  <text x="860" y="140" fill="#fff" font-size="24" font-weight="bold" text-anchor="middle">PLACA ZERO DELAY (USB)</text>
+  <rect x="805" y="330" width="110" height="80" rx="5" fill="#111"/>
+  <text x="860" y="376" fill="#aaa" font-size="15" text-anchor="middle">CHIP</text>
+  <!-- USB -->
+  <rect x="820" y="560" width="80" height="36" rx="4" fill="#bbb" stroke="#777"/>
+  <text x="860" y="584" fill="#222" font-size="15" text-anchor="middle" font-weight="bold">USB</text>
+  <path d="M860,596 C860,650 860,660 860,690" stroke="#ddd" stroke-width="8" fill="none"/>
+  <rect x="770" y="690" width="180" height="56" rx="8" fill="#263238" stroke="#90a4ae" stroke-width="2"/>
+  <text x="860" y="725" fill="#fff" font-size="19" text-anchor="middle" font-weight="bold">TV BOX (Android)</text>
+
+  <!-- conector JOYSTICK (5 pinos) -->
+  <rect x="585" y="200" width="150" height="230" rx="8" fill="#f2f2f2" stroke="#999"/>
+  <text x="660" y="192" fill="#fff" font-size="17" text-anchor="middle" font-weight="bold">JOYSTICK</text>
+  <g font-size="15" fill="#222">
+    <rect x="600" y="215" width="20" height="20" fill="#111"/><text x="630" y="231">GND</text>
+    <rect x="600" y="257" width="20" height="20" fill="#c62828"/><text x="630" y="273">CIMA</text>
+    <rect x="600" y="299" width="20" height="20" fill="#1565c0"/><text x="630" y="315">BAIXO</text>
+    <rect x="600" y="341" width="20" height="20" fill="#f9a825"/><text x="630" y="357">ESQ.</text>
+    <rect x="600" y="383" width="20" height="20" fill="#2e7d32"/><text x="630" y="399">DIR.</text>
+  </g>
+
+  <!-- portas de botão K1..K12 (2 pinos: sinal + GND) -->
+  <text x="1035" y="192" fill="#fff" font-size="17" text-anchor="middle" font-weight="bold">BOTÕES (sinal + GND)</text>
+  <g font-size="14" fill="#fff">
+    <!-- coluna A: K1..K6 / coluna B: K7..K12 -->
+    <g id="col">
+    </g>
+  </g>
+  <g font-size="14">
+    <rect x="950" y="205" width="80" height="34" rx="5" fill="#0d47a1" stroke="#4fc3f7" stroke-width="3"/><text x="990" y="227" fill="#fff" text-anchor="middle" font-weight="bold">K1</text>
+    <rect x="950" y="247" width="80" height="34" rx="5" fill="#b71c1c" stroke="#ff8a80" stroke-width="3"/><text x="990" y="269" fill="#fff" text-anchor="middle" font-weight="bold">K2</text>
+    <rect x="950" y="289" width="80" height="34" rx="5" fill="#33475b"/><text x="990" y="311" fill="#9fb3c8" text-anchor="middle">K3</text>
+    <rect x="950" y="331" width="80" height="34" rx="5" fill="#33475b"/><text x="990" y="353" fill="#9fb3c8" text-anchor="middle">K4</text>
+    <rect x="950" y="373" width="80" height="34" rx="5" fill="#33475b"/><text x="990" y="395" fill="#9fb3c8" text-anchor="middle">K9</text>
+    <rect x="950" y="415" width="80" height="34" rx="5" fill="#33475b"/><text x="990" y="437" fill="#9fb3c8" text-anchor="middle">K10</text>
+    <rect x="1050" y="205" width="80" height="34" rx="5" fill="#b71c1c" stroke="#ff8a80" stroke-width="3"/><text x="1090" y="227" fill="#fff" text-anchor="middle" font-weight="bold">K5</text>
+    <rect x="1050" y="247" width="80" height="34" rx="5" fill="#b71c1c" stroke="#ff8a80" stroke-width="3"/><text x="1090" y="269" fill="#fff" text-anchor="middle" font-weight="bold">K6</text>
+    <rect x="1050" y="289" width="80" height="34" rx="5" fill="#b71c1c" stroke="#ff8a80" stroke-width="3"/><text x="1090" y="311" fill="#fff" text-anchor="middle" font-weight="bold">K7</text>
+    <rect x="1050" y="331" width="80" height="34" rx="5" fill="#b71c1c" stroke="#ff8a80" stroke-width="3"/><text x="1090" y="353" fill="#fff" text-anchor="middle" font-weight="bold">K8</text>
+    <rect x="1050" y="373" width="80" height="34" rx="5" fill="#33475b"/><text x="1090" y="395" fill="#9fb3c8" text-anchor="middle">K11</text>
+    <rect x="1050" y="415" width="80" height="34" rx="5" fill="#33475b"/><text x="1090" y="437" fill="#9fb3c8" text-anchor="middle">K12</text>
+  </g>
+  <text x="1040" y="478" fill="#c8e6c9" font-size="14" text-anchor="middle">livres: K3, K4, K9–K12</text>
+  <text x="1040" y="498" fill="#c8e6c9" font-size="14" text-anchor="middle">(chave LS/DP: qualquer posição)</text>
+
+  <!-- ===================== JOGADOR 1 ===================== -->
+  <text x="190" y="40" fill="#4fc3f7" font-size="28" font-weight="bold" text-anchor="middle">JOGADOR 1</text>
+  <!-- manche J1 -->
+  <rect x="80" y="70" width="220" height="220" rx="18" fill="#1b2735" stroke="#4fc3f7" stroke-width="3"/>
+  <circle cx="190" cy="180" r="30" fill="#4fc3f7"/><circle cx="190" cy="180" r="12" fill="#0d47a1"/>
+  <text x="190" y="110" fill="#fff" font-size="16" text-anchor="middle" font-weight="bold">MANCHE J1</text>
+  <text x="190" y="270" fill="#9fb3c8" font-size="12" text-anchor="middle">cabo de 5 fios (vem com a placa)</text>
+  <g stroke-width="5" fill="none">
+    <path d="M300,140 C440,140 470,225 600,225" stroke="#111"/>
+    <path d="M300,160 C440,160 470,267 600,267" stroke="#c62828"/>
+    <path d="M300,180 C440,180 470,309 600,309" stroke="#1565c0"/>
+    <path d="M300,200 C440,200 470,351 600,351" stroke="#f9a825"/>
+    <path d="M300,220 C440,220 470,393 600,393" stroke="#2e7d32"/>
+  </g>
+  <!-- botão J1 -->
+  <circle cx="190" cy="420" r="58" fill="#0d47a1" stroke="#4fc3f7" stroke-width="5"/>
+  <text x="190" y="415" fill="#fff" font-size="18" text-anchor="middle" font-weight="bold">BOTÃO</text>
+  <text x="190" y="438" fill="#fff" font-size="18" text-anchor="middle" font-weight="bold">J1</text>
+  <text x="190" y="500" fill="#9fb3c8" font-size="14" text-anchor="middle">chute • START • confirmar</text>
+  <path d="M248,420 C500,420 520,600 760,600 C930,600 930,222 950,222" stroke="#4fc3f7" stroke-width="4" fill="none" stroke-dasharray="0"/>
+  <text x="560" y="625" fill="#4fc3f7" font-size="15" text-anchor="middle">K1 (sinal) + GND</text>
+
+  <!-- ===================== JOGADOR 2 ===================== -->
+  <text x="1530" y="40" fill="#ff8a80" font-size="28" font-weight="bold" text-anchor="middle">JOGADOR 2</text>
+  <rect x="1400" y="70" width="260" height="320" rx="18" fill="#1b2735" stroke="#ff8a80" stroke-width="3"/>
+  <text x="1530" y="100" fill="#fff" font-size="16" text-anchor="middle" font-weight="bold">MANCHE J2 (4 microchaves)</text>
+  <circle cx="1600" cy="150" r="24" fill="#ff8a80"/><circle cx="1600" cy="150" r="9" fill="#b71c1c"/>
+  <g font-size="15" font-weight="bold">
+    <rect x="1392" y="205" width="16" height="16" fill="#c62828"/><text x="1420" y="219" fill="#ef9a9a">chave CIMA  →  K5</text>
+    <rect x="1392" y="247" width="16" height="16" fill="#1565c0"/><text x="1420" y="261" fill="#90caf9">chave BAIXO  →  K6</text>
+    <rect x="1392" y="289" width="16" height="16" fill="#f9a825"/><text x="1420" y="303" fill="#ffe082">chave ESQ.  →  K7</text>
+    <rect x="1392" y="331" width="16" height="16" fill="#2e7d32"/><text x="1420" y="345" fill="#a5d6a7">chave DIR.  →  K8</text>
+  </g>
+  <text x="1530" y="372" fill="#9fb3c8" font-size="13" text-anchor="middle">COMUM das 4 chaves → GND</text>
+  <g stroke-width="4" fill="none">
+    <path d="M1392,213 C1260,213 1250,222 1130,222" stroke="#c62828"/>
+    <path d="M1392,255 C1260,255 1250,264 1130,264" stroke="#1565c0"/>
+    <path d="M1392,297 C1260,297 1250,306 1130,306" stroke="#f9a825"/>
+    <path d="M1392,339 C1260,339 1250,348 1130,348" stroke="#2e7d32"/>
+  </g>
+  <!-- botão J2 -->
+  <circle cx="1530" cy="470" r="58" fill="#b71c1c" stroke="#ff8a80" stroke-width="5"/>
+  <text x="1530" y="465" fill="#fff" font-size="18" text-anchor="middle" font-weight="bold">BOTÃO</text>
+  <text x="1530" y="488" fill="#fff" font-size="18" text-anchor="middle" font-weight="bold">J2</text>
+  <text x="1530" y="550" fill="#9fb3c8" font-size="14" text-anchor="middle">chute • START • confirmar</text>
+  <path d="M1472,470 C1300,470 1180,650 1000,650 C930,650 925,264 950,264" stroke="#ff8a80" stroke-width="4" fill="none"/>
+  <text x="1250" y="640" fill="#ff8a80" font-size="15" text-anchor="middle">K2 (sinal) + GND</text>
+</svg>
+
+<table>
+  <tr><th>Peça</th><th>Liga em</th><th>Função no jogo</th></tr>
+  <tr><td><span class="j1">Manche J1</span> (cabo de 5 fios)</td><td>conector <b>JOYSTICK</b> (GND, CIMA, BAIXO, ESQ., DIR.)</td><td>cima/baixo troca o tazo, esquerda/direita mira, anda nos menus</td></tr>
+  <tr><td><span class="j1">Botão J1</span></td><td><b>K1</b> (ou qualquer porta livre: K3, K4, K9–K12)</td><td>segurar e soltar = chute com força; START; confirmar</td></tr>
+  <tr><td><span class="j2">Manche J2</span> (4 microchaves)</td><td><b>K5</b> = CIMA, <b>K6</b> = BAIXO, <b>K7</b> = ESQ., <b>K8</b> = DIR. (o fio do NA de cada chave no sinal da porta)</td><td>as mesmas do jogador 1</td></tr>
+  <tr><td><span class="j2">Comum das chaves do J2</span></td><td><b>GND</b> de qualquer porta (pode emendar os 4 comuns num fio só)</td><td>—</td></tr>
+  <tr><td><span class="j2">Botão J2</span></td><td><b>K2</b></td><td>chute, START e confirmar do jogador 2</td></tr>
+  <tr><td><b>USB</b> da placa</td><td>TV box (Android)</td><td>a placa aparece como um controle só; o jogo entra sozinho no modo <b>UMA PLACA</b></td></tr>
+</table>
+
+<div class="notas">
+  <div class="nota am"><b>Depois de ligar:</b> MENU &gt; OPÇÕES &gt; CONFIGURAR CONTROLES &gt; <b>CONFIGURAR PLACA</b>. O jogo pede os 5 do jogador 1 (cima, baixo, esquerda, direita, botão) e depois os 5 do jogador 2. Aperte cada um: fica gravado, mesmo que a numeração da sua placa seja diferente.</div>
+  <div class="nota"><b>TESTAR</b> (na mesma tela): as luzes de cada jogador acendem com o manche e o botão. Confira as 4 direções e o botão dos dois.</div>
+  <div class="nota vm"><b>Manche do J2:</b> em manche de fliperama a microchave que aciona fica do lado OPOSTO ao movimento (empurrar para cima aperta a chave de baixo da base): ligue pela direção do movimento. Se ficar trocado, não precisa refazer a fiação: CONFIGURAR PLACA grava o que você apertar.</div>
+  <div class="nota"><b>1 jogador contra a CPU:</b> joga com o manche e o botão de qualquer um dos dois lados. <b>Duas placas</b> ligadas: o jogo volta ao modo antigo (uma placa por jogador).</div>
+</div>
+</div></body></html>

@@ -1,0 +1,23 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/torcida_uuu.wav-12fea92d35b3680946a5c015c32ea85c.sample"
+
+[deps]
+
+source_file="res://sons/torcida_uuu.wav"
+dest_files=[ "res://.import/torcida_uuu.wav-12fea92d35b3680946a5c015c32ea85c.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
