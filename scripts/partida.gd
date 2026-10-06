@@ -609,7 +609,7 @@ func _placa_escolhida(dev: int) -> void:
 
 
 func _comecar_intro() -> void:
-	var ceu: String = {"sol": "DIA DE SOL", "chuva": "CHUVA: A BOLA CORRE MENOS", "noite": "JOGO À NOITE", "noite_chuva": "NOITE COM CHUVA: A BOLA CORRE MENOS"}[clima_tipo]
+	var ceu: String = {"sol": "DIA DE SOL", "chuva": "DIA DE CHUVA", "noite": "JOGO À NOITE", "noite_chuva": "NOITE COM CHUVA"}[clima_tipo]
 	_aviso("%s x %s" % [Jogo.selecao(siglas[0]).nome, Jogo.selecao(siglas[1]).nome], ceu + "  •  QUE COMECE O JOGO!", Color(0.05, 0.25, 0.1, 0.75), 2.2)
 	torcida.pular(0, 0.6, 2.5)
 	torcida.pular(1, 0.6, 2.5)

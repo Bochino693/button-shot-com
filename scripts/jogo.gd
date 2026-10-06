@@ -246,42 +246,6 @@ func _existe_time(sigla: String) -> bool:
 	return false
 
 
-## Céus do 3D (dia, chuva, noite) feitos UMA vez e reaproveitados: montar
-## o reflexo do céu é caro (na TV box travava a entrada da apresentação e
-## do pódio); reaproveitado, custa zero.
-var _ceus := {}
-
-
-func ceu(nome: String) -> PanoramaSky:
-	if not _ceus.has(nome):
-		var ps := PanoramaSky.new()
-		ps.radiance_size = Sky.RADIANCE_SIZE_32
-		ps.panorama = load("res://imagens/ceu_%s.png" % nome)
-		_ceus[nome] = ps
-	return _ceus[nome]
-
-
-## Calcula de antemão o reflexo dos céus que faltam (na tela de abertura,
-## parada): a apresentação e o pódio entram sem esperar.
-func preaquecer_ceus() -> void:
-	for nome in ["dia", "chuva", "noite"]:
-		if _ceus.has(nome) and _ceus[nome].has_meta("pronto"):
-			continue
-		var vp := Viewport.new()
-		vp.size = Vector2(4, 4)
-		vp.own_world = true
-		vp.render_target_update_mode = Viewport.UPDATE_ONCE
-		var we := WorldEnvironment.new()
-		var env := Environment.new()
-		env.background_mode = Environment.BG_SKY
-		env.background_sky = ceu(nome)
-		we.environment = env
-		vp.add_child(we)
-		add_child(vp)
-		ceu(nome).set_meta("pronto", true)
-		get_tree().create_timer(1.0).connect("timeout", vp, "queue_free")
-
-
 func estadio(sigla: String, pequeno: bool) -> Texture:
 	var s := "extra" if selecao(sigla).get("extra", false) else sigla.to_lower()
 	# sem o cache de _tex: cada estádio pesa vários MB e só um fica na tela
@@ -1079,13 +1043,14 @@ func ir_para(cena: String) -> void:
 	if _trocando:
 		return
 	_trocando = true
-	_tween.interpolate_property(_cortina, "modulate:a", _cortina.modulate.a, 1.0, 0.28, Tween.TRANS_SINE, Tween.EASE_IN)
+	# cortina rápida: escurece, troca e já começa a clarear
+	_tween.interpolate_property(_cortina, "modulate:a", _cortina.modulate.a, 1.0, 0.18, Tween.TRANS_SINE, Tween.EASE_IN)
 	_tween.start()
 	yield(_tween, "tween_all_completed")
 	get_tree().paused = false
 	Engine.time_scale = 1.0
-	# a tela só troca se carregar inteira (script sem erro): uma tela que
-	# não abre (arquivo faltando no APK) nunca prende no lobby. A
+	# a tela só troca se o arquivo e o script dela estiverem inteiros: uma
+	# tela que não abre (arquivo faltando no APK) nunca prende no lobby. A
 	# apresentação cai direto na partida, o pódio na chave; o resto
 	# recarrega a tela atual (o botão volta a funcionar).
 	var reserva := {"res://cenas/preparacao.tscn": "res://cenas/partida.tscn",
@@ -1100,24 +1065,31 @@ func ir_para(cena: String) -> void:
 		push_error("Falha ao abrir %s" % cena)
 		get_tree().reload_current_scene()
 	yield(get_tree(), "idle_frame")
-	yield(get_tree(), "idle_frame")
-	_tween.interpolate_property(_cortina, "modulate:a", 1.0, 0.0, 0.45, Tween.TRANS_SINE, Tween.EASE_OUT)
+	_tween.interpolate_property(_cortina, "modulate:a", 1.0, 0.0, 0.3, Tween.TRANS_SINE, Tween.EASE_OUT)
 	_tween.start()
 	_trocando = false
 
 
-## A cena carregada e com o script inteiro (null se faltar algo).
+## A cena carregada com o script inteiro (null se faltar algo). Confere
+## pelo "estado" da cena, sem montá-la (antes a tela era montada duas
+## vezes a cada troca), e guarda o resultado.
+var _cenas_ok := {}
+
+
 func _cena_boa(cena: String) -> PackedScene:
+	if _cenas_ok.has(cena):
+		return _cenas_ok[cena]
 	var ps = load(cena) if ResourceLoader.exists(cena) else null
 	if not ps is PackedScene or not ps.can_instance():
 		return null
-	var n: Node = ps.instance()
-	if n == null:
-		return null
-	var sc = n.get_script()
-	var ok: bool = sc == null or sc.can_instance()
-	n.free()
-	return ps if ok else null
+	var st: SceneState = ps.get_state()
+	for k in range(st.get_node_property_count(0)):
+		if st.get_node_property_name(0, k) == "script":
+			var sc = st.get_node_property_value(0, k)
+			if not sc is Script or not sc.can_instance():
+				return null
+	_cenas_ok[cena] = ps
+	return ps
 
 
 func trocando() -> bool:

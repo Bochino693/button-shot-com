@@ -77,7 +77,31 @@ func _chove() -> bool:
 	return clima == "chuva" or clima == "noite_chuva"
 
 
+## Monta o estádio inteiro de uma vez (pódio, abertura).
 func montar(c: String, f: String, tempo: String, opcoes := {}) -> void:
+	_preparar_montagem(c, f, tempo, opcoes)
+	for i in range(ETAPAS):
+		_etapa(i)
+
+
+## O mesmo, uma etapa por quadro: a capa de carregamento continua viva e a
+## barra anda enquanto o estádio é montado (sem tela preta na entrada).
+## progresso(f): 0..1 a cada etapa pronta.
+func montar_em_partes(c: String, f: String, tempo: String, opcoes := {}, progresso: FuncRef = null) -> void:
+	_preparar_montagem(c, f, tempo, opcoes)
+	for i in range(ETAPAS):
+		_etapa(i)
+		if progresso != null:
+			progresso.call_func(float(i + 1) / ETAPAS)
+		yield(get_tree(), "idle_frame")
+
+
+const ETAPAS := 5
+var _opcoes := {}
+var _v := {}
+
+
+func _preparar_montagem(c: String, f: String, tempo: String, opcoes: Dictionary) -> void:
 	casa = c
 	fora = f
 	clima = tempo if tempo in ["sol", "chuva", "noite", "noite_chuva"] else "sol"
@@ -87,40 +111,53 @@ func montar(c: String, f: String, tempo: String, opcoes := {}) -> void:
 	_cores = opcoes.get("cores", [])
 	_bandeira = opcoes.get("bandeira", null)
 	leve = opcoes.get("leve", Qualidade3D.leve())
+	_opcoes = opcoes
 	HX = Campo.MURO.size.x * ESC * 0.5
 	HZ = Campo.MURO.size.y * ESC * 0.5
-	var v := _estilo(local)
-	_ceu()
-	_luzes()
-	_chao()
-	if not intro:
-		_gramado()
-		_placas()
-		_gols()
-		if podio.empty():
-			_tazos()
-		else:
-			_podio()
-	_estadio(v)
-	_torres(v)
-	_bandeiroes()
-	_astros()
-	if not opcoes.get("sem_paisagem", false):
-		paisagem = Paisagem.new()
-		paisagem.leve = leve
-		paisagem.astro = ((SOL if not _noite() else LUA) - Vector3(0, 0, -300)).normalized()
-		add_child(paisagem)
-		paisagem.montar(local, clima)
-	if _chove():
-		_fazer_chuva()
-	if _noite() or not podio.empty():
-		_fazer_flashes()
-		_fazer_fogos()
-	_fundir()
-	add_child(_multi_brilhos(_brilhos))
-	_ceu_longe.add_child(_multi_brilhos(_brilhos_ceu))
-	if intro:
-		return
+	_v = _estilo(local)
+
+
+func _etapa(i: int) -> void:
+	match i:
+		0:
+			_ceu()
+			_luzes()
+			_chao()
+			if not intro:
+				_gramado()
+				_placas()
+				_gols()
+				if podio.empty():
+					_tazos()
+				else:
+					_podio()
+		1:
+			_estadio(_v)
+			_torres(_v)
+			_bandeiroes()
+			_astros()
+		2:
+			if not _opcoes.get("sem_paisagem", false):
+				paisagem = Paisagem.new()
+				paisagem.leve = leve
+				paisagem.astro = ((SOL if not _noite() else LUA) - Vector3(0, 0, -300)).normalized()
+				add_child(paisagem)
+				paisagem.montar(local, clima)
+		3:
+			if _chove():
+				_fazer_chuva()
+			if _noite() or not podio.empty():
+				_fazer_flashes()
+				_fazer_fogos()
+			_fundir()
+			add_child(_multi_brilhos(_brilhos))
+			_ceu_longe.add_child(_multi_brilhos(_brilhos_ceu))
+		4:
+			if not intro:
+				_montar_camera(_v)
+
+
+func _montar_camera(v: Dictionary) -> void:
 	camera = Camera.new()
 	camera.fov = 55.0
 	camera.far = 2600.0
@@ -271,11 +308,29 @@ func _caixa(centro: Vector3, tam: Vector3, mat: Material) -> MeshInstance:
 func _ceu() -> void:
 	var we := WorldEnvironment.new()
 	var env := Environment.new()
-	# o céu vem pronto do Jogo (reflexo calculado uma vez só por clima)
-	var ps := Jogo.ceu({"sol": "dia", "chuva": "chuva", "noite": "noite", "noite_chuva": "noite"}[clima])
-	env.background_mode = Environment.BG_SKY
-	env.background_sky = ps
-	env.background_energy = 0.55 if clima == "noite_chuva" else 1.0
+	# O céu é uma cúpula com a foto do céu, presa à câmera (_ceu_longe):
+	# nada de "Sky" do motor, que calculava o reflexo do céu na entrada da
+	# apresentação (era a parte mais lenta de montar o estádio na TV box).
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = {"sol": Color(0.62, 0.76, 0.95), "chuva": Color(0.5, 0.53, 0.58), "noite": Color(0.03, 0.04, 0.09), "noite_chuva": Color(0.04, 0.05, 0.08)}[clima]
+	_ceu_longe = Spatial.new()
+	add_child(_ceu_longe)
+	var cupula := MeshInstance.new()
+	var esfera := SphereMesh.new()
+	esfera.radius = 1300.0
+	esfera.height = 2600.0
+	esfera.radial_segments = 48
+	esfera.rings = 24
+	cupula.mesh = esfera
+	var mc := SpatialMaterial.new()
+	mc.flags_unshaded = true
+	mc.params_cull_mode = SpatialMaterial.CULL_FRONT          # vista por dentro
+	mc.albedo_texture = load("res://imagens/ceu_%s.png" % {"sol": "dia", "chuva": "chuva", "noite": "noite", "noite_chuva": "noite"}[clima])
+	if clima == "noite_chuva":
+		mc.albedo_color = Color(0.55, 0.55, 0.55)
+	cupula.material_override = mc
+	cupula.cast_shadow = GeometryInstance.SHADOW_CASTING_SETTING_OFF
+	_ceu_longe.add_child(cupula)
 	env.fog_enabled = true
 	env.fog_depth_enabled = true
 	match clima:
@@ -1247,6 +1302,7 @@ func _abrir_no_postal(p: Dictionary) -> void:
 const V_POS := 62.0         # m/s da câmera perto do chão (mais alto, mais rápido)
 const V_ALVO := 185.0      # m/s do ponto para onde ela olha
 const V_GIRO := 54.0        # graus/s do olhar
+const VOO_MAX := 11.5       # s: da cidade até a câmera da TV
 func _cronometrar() -> void:
 	var t := 0.0
 	var n := _chaves.size()
@@ -1267,6 +1323,12 @@ func _cronometrar() -> void:
 				dt = max(max(a[1].distance_to(b[1]) / v, a[2].distance_to(b[2]) / V_ALVO), max(giro / V_GIRO, minimo))
 			t += dt
 		_chaves[i][0] = t
+	# a apresentação nunca passa de VOO_MAX até a câmera da TV (cidades com
+	# cartão-postal ficavam com 16 s): o mesmo caminho, um pouco mais rápido
+	var k: float = min(1.0, VOO_MAX / max(_chaves[n - 2][0], 0.01))
+	for i in range(n - 1):
+		_chaves[i][0] *= k
+	_chaves[n - 1][0] = _chaves[n - 2][0] + 9.0
 	t_tv = _chaves[n - 2][0]
 	t_terco_ini = _chaves[_i_terco][0] + 0.5
 	t_terco_fim = max(t_terco_ini + 3.0, _chaves[_i_terco + 2][0])
@@ -1382,8 +1444,6 @@ func festa(k: float) -> void:
 ## ficam sempre à mesma distância (como estrelas de verdade), pequenos e
 ## lá no fundo, sem crescer quando a câmera anda.
 func _astros() -> void:
-	_ceu_longe = Spatial.new()
-	add_child(_ceu_longe)
 	if not _noite():
 		if _chove():
 			return

@@ -35,6 +35,7 @@ var _escudo: TextureRect
 var _clarao: ColorRect
 var _chamada: Label
 var _raiz: Control
+var _montado := false
 
 
 func _ready() -> void:
@@ -46,13 +47,28 @@ func _ready() -> void:
 		Jogo.ir_para("res://cenas/chave.tscn")
 		set_process(false)
 		return
-	# o quadro 3D: o palco prepara tudo escondido antes do show
+	# a capa aparece já no primeiro quadro; o estádio vem atrás dela
 	_palco = Palco3D.new()
 	_palco.criar(self)
+	var sc := Jogo.selecao(campeao)
+	_palco.capa(self, "A FESTA DO CAMPEÃO", "COPA CRAQUE DE BOTÃO   •   " + sc.nome, [Jogo.emblema(campeao)], [Color(sc.torcida[0]), Color(sc.torcida[1])])
+	_palco.montagem(0.0)
+	Jogo.ambiente(0.35)
+	Jogo.parar_musica(0.6)
+	set_process(false)
+	_montar(campeao)
+
+
+## Monta o estádio (uma etapa por quadro) e os cartões, e só então começa o
+## preparo escondido do palco.
+func _montar(campeao: String) -> void:
+	yield(get_tree(), "idle_frame")
 	_estadio = Estadio3D.new()
 	_palco.vp.add_child(_estadio)
 	var outro: String = _podio[1] if _podio.size() > 1 and _podio[1] != "" else campeao
-	_estadio.montar(campeao, outro, "noite", {"podio": _podio})
+	yield(_estadio.montar_em_partes(campeao, outro, "noite", {"podio": _podio}, funcref(_palco, "montagem")), "completed")
+	if not is_inside_tree():
+		return
 
 	_raiz = Control.new()
 	_raiz.mouse_filter = MOUSE_FILTER_IGNORE
@@ -119,12 +135,11 @@ func _ready() -> void:
 		for sg in _podio:
 			if sg != "":
 				Jogo.preaquecer(t, Jogo.selecao(sg).nome)
-	Jogo.ambiente(0.35)
-	Jogo.parar_musica(0.6)
-	var sc := Jogo.selecao(campeao)
-	_palco.capa(self, "A FESTA DO CAMPEÃO", "COPA CRAQUE DE BOTÃO   •   " + sc.nome, [Jogo.emblema(campeao)], [Color(sc.torcida[0]), Color(sc.torcida[1])])
+	_palco.capa_por_cima()
 	_palco.preparar(_estadio, funcref(_estadio, "posicionar_camera"), _estadio.amostras(), _estadio.medir_em())
+	_montado = true
 	_atualizar()
+	set_process(true)
 
 
 ## Cartão de colocação (2º ou 3º): escudo, posição e nome.
@@ -154,7 +169,7 @@ func _cartao(lugar: int, x: float, t0: float, lado: float) -> void:
 
 
 func _process(delta: float) -> void:
-	if not _palco.esta_pronto:
+	if not _montado or not _palco.esta_pronto:
 		return
 	# tempo real (sem câmera lenta); só um engasgo grande é aparado
 	_t += min(delta, 0.1)
@@ -236,7 +251,7 @@ func _atualizar() -> void:
 
 
 func _unhandled_input(ev: InputEvent) -> void:
-	if _t < 2.0 or _saindo:
+	if not _montado or _t < 2.0 or _saindo:
 		return
 	var tocou = (ev is InputEventMouseButton and ev.pressed) or (ev is InputEventScreenTouch and ev.pressed)
 	if tocou or ev.is_action_pressed("ui_accept") or ev.is_action_pressed("p1_chute") or ev.is_action_pressed("p2_chute"):
@@ -260,5 +275,5 @@ func _sair() -> void:
 
 
 func _notification(what: int) -> void:
-	if what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST:
+	if what == MainLoop.NOTIFICATION_WM_GO_BACK_REQUEST and _montado:
 		_sair()

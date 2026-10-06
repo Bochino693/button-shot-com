@@ -47,6 +47,8 @@ var _progresso := 0.0
 var _total := 1
 var _meia_taxa := false
 var _ja_calibrado := false     # esta TV box já foi medida: não mede de novo
+var _montagem := 1.0           # 0..1: montagem do estádio (antes do preparo)
+const PARTE_MONTAGEM := 0.35   # quanto da barra é a montagem
 
 var _capa: Control
 var _barra_fundo: StyleBoxFlat
@@ -123,6 +125,17 @@ func capa(pai: Control, titulo: String, sub: String, escudos: Array, cores: Arra
 	_barra_cheia.anti_aliasing = true
 
 
+## Montagem do estádio em andamento (0..1): a barra anda já nessa fase.
+func montagem(f: float) -> void:
+	_montagem = clamp(f, 0.0, 1.0)
+
+
+## A capa fica por cima de tudo que a tela criou depois dela.
+func capa_por_cima() -> void:
+	if _capa != null and _capa.get_parent() != null:
+		_capa.get_parent().move_child(_capa, _capa.get_parent().get_child_count() - 1)
+
+
 ## Começa o preparo. `posicionar` = função(t) da câmera do show; `amostras`
 ## = tempos do show (um por plano, começo/meio/fim); `medir_em` = tempos
 ## dos planos mais pesados.
@@ -169,7 +182,8 @@ func _process(delta: float) -> void:
 			_t_dica = 0.0
 			_dica.text = "DICA  •  " + Jogo.dica()
 	if _capa != null:
-		var alvo: float = clamp(_progresso / max(1.0, float(_total)), 0.0, 1.0)
+		var preparo: float = clamp(_progresso / max(1.0, float(_total)), 0.0, 1.0) if _posicionar != null else 0.0
+		var alvo: float = PARTE_MONTAGEM * _montagem + (1.0 - PARTE_MONTAGEM) * preparo
 		var novo: float = lerp(_mostrado, alvo, min(1.0, min(delta, 0.05) * 6.0))
 		if abs(novo - _mostrado) > 0.0005:
 			_mostrado = novo
